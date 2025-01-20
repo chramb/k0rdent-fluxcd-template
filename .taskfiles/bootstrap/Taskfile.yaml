@@ -1,0 +1,80 @@
+version: '3'
+
+vars:
+  CONFIG_FILE: '{{.ROOT_DIR}}/config.yaml'
+
+tasks:
+
+  :init:
+    desc: creates the local configuration to bootstrap FluxCD and render templates
+    cmd: mv {{.CONFIG_FILE | replace ".yaml" ".sample.yaml" }} {{.CONFIG_FILE}}
+    status:
+      - test -f {{.CONFIG_FILE}}
+
+  flux:
+    desc: bootstrap Flux on the management cluster
+    deps:
+      - for:
+          - GITHUB_TOKEN
+          - GITHUB_USERNAME
+          - GITHUB_REPO_NAME
+        task: check-variable-set
+        vars:
+          VAR: '{{.ITEM}}'
+    cmds:
+      - flux bootstrap github 
+        --token-auth
+        --token={{.GITHUB_TOKEN}}
+        --owner={{.GITHUB_USERNAME}}
+        --repository={{.GITHUB_REPO_NAME}}
+        --branch={{ .GITHUB_REPO_BRANCH | default "main" }}
+        --path=flux
+        {{if not .GITHUB_ORGANIZATION}} --personal {{end}}
+      - git pull
+    preconditions:
+      - sh: which flux
+        msg: |-
+          Please install the flux CLI as described in the official FluxCD documentation
+          https://fluxcd.io/flux/get-started/#install-the-flux-cli
+      - sh: which kubectl
+        msg: |-
+          Install and configure kubectl
+
+  :configure:
+    desc: Render and validate k0rdent configuration files
+    cmds:
+      - task: render-configs
+  
+  render-configs:
+    sources:
+      - .templates/**/*.yaml
+      - .templates/**/.gitkeep
+    method: none
+    deps:
+      - for:
+          - GITHUB_USERNAME
+          - GITHUB_REPO_NAME
+        task: check-variable-set
+        vars:
+          VAR: '{{.ITEM}}'
+    cmds:
+      - for: sources
+        cmd: |
+          mkdir -p {{.ITEM | trimPrefix ".templates/" | dir}};
+          envsubst < {{.ITEM}} > {{.ITEM | trimPrefix ".templates/"}};
+    preconditions:
+      - sh: test -f {{.CONFIG_FILE}}
+        msg: |-
+          Please generate and fill the config.yaml configuration file with the 'task init' command
+    
+  check-variable-set:
+    silent: true
+    cmds:
+      - |
+        if [ "${{.VAR}}" == "" ]; then \
+          echo "The variable {{.VAR}} must be set in the config.yaml!"; \
+          exit 1; \
+        fi;
+
+
+

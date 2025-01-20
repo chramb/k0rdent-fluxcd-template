@@ -1,0 +1,44 @@
+version: '3'
+
+env:
+  
+  # ==== FluxCD bootstrap ====
+  # These variables are used only if you bootstrap a new FluxCD installation from this repo using the command:
+  #   task bootstrap:flux
+  #
+  # (REQUIRED) Github PAT token to configure the connection from k8s cluster to GitOps repo
+  # Check the official FluxCD documentation https://fluxcd.io/flux/installation/bootstrap/github/#github-pat
+  GITHUB_TOKEN: ""
+
+  # (OPTIONAL) If created repo is owned by organization
+  GITHUB_ORGANIZATION: false
+
+  
+
+  # ==== Template generation ====
+  # These variables are used to generate manifests
+  #
+  # (REQUIRED) The owner of this Github repository - it could be user or organization
+  GITHUB_USERNAME: ""
+
+  # (REQUIRED) The name of this Github repository, it will be used as the GitOps source
+  GITHUB_REPO_NAME: ""
+
+  # (OPTIONAL) Git branch that will be used as the source to sync the state
+  GITHUB_REPO_BRANCH: main
+
+  # (OTPTIONAL) kubernetes namespace where the Flux is installed.
+  # GitRepository and Kustomization objects will be deployed in this namespace
+  FLUX_NAMESPACE: flux-system
+
+  # (OPTIONAL) k0rdent KCM component namespace
+  KCM_NAMESPACE: kcm-system
+
+  # (OPTIONAL) k0rdent KCM component version
+  KCM_VERSION: 0.0.7
+
+  # (OPTIONAL) k0rdent KCM helm OCI repository
+  KCM_OCI_REPOSITORY: oci://ghcr.io/k0rdent/kcm/charts/kcm
+
+  # (OPTIONAL) if your management cluster already has the installed cert manager, you can change this value to false
+  KCM_CERTMANAGER_ENABLED: true
