@@ -23,6 +23,8 @@ go.work.sum
 
 # env file
 *.env
+!flux-config.sample.env
 
 .task
 /config.yaml
+/bin

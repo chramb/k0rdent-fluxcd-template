@@ -2,9 +2,6 @@ version: '3'
 
 includes:
   bootstrap: .taskfiles/bootstrap
-  config:
-    taskfile: config.yaml
-    optional: true
 
 tasks:
 

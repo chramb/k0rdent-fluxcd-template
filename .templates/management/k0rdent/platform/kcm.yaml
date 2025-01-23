@@ -2,48 +2,44 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: $KCM_NAMESPACE
+  name: {{ .kcm.namespace }}
   labels:
     app.kubernetes.io/instance: kcm-system
     app.kubernetes.io/part-of: k0rdent
-    app.kubernetes.io/version: $KCM_VERSION
 
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
   name: kcm
-  namespace: $KCM_NAMESPACE
+  namespace: {{ .kcm.namespace }}
 spec:
   interval: 5m0s
-  url: $KCM_OCI_REPOSITORY
+  url: {{ .kcm.repository }}
   ref:
-    tag: $KCM_VERSION
+    tag: {{ .kcm.version }}
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: kcm
-  namespace: $KCM_NAMESPACE
+  namespace: {{ .kcm.namespace }}
 spec:
   chartRef:
     kind: OCIRepository
     name: kcm
-    namespace: $KCM_NAMESPACE
+    namespace: {{ .kcm.namespace }}
   interval: 10m
   values:
-    flux2:
-      enabled: false
-    cert-manager:
-      enabled: $KCM_CERTMANAGER_ENABLED
+{{ .kcm.values | toYAML | strings.Indent 4 }}
 
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-hmc-operator-interaction
-  namespace: $FLUX_NAMESPACE
+  name: allow-kcm-controller-interaction
+  namespace: {{ .flux.namespace }}
 spec:
   ingress:
   - from:

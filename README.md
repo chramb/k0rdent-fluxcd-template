@@ -4,8 +4,9 @@
 
 1. `kubectl` binary installed and added to the PATH
 2. This repo uses `task-go` utility to run commands. Please [install](https://taskfile.dev/installation/) it and add it to the PATH
-2. kubernetes cluster that will be used as the [management cluster](https://k0rdent.github.io/docs/glossary/#management-cluster). Configure kubectl to connect and use this cluster
-3. If you decide to bootstrap FluxCD using this repo (other options described in next steps), you need to [install](https://fluxcd.io/flux/installation/) `flux` CLI and add it to the PATH
+3. To generate manifest we use `gomplate` template engine. Please [install](https://docs.gomplate.ca/installing/) it and add to the PATH
+4. kubernetes cluster that will be used as the [management cluster](https://k0rdent.github.io/docs/glossary/#management-cluster). Configure kubectl to connect and use this cluster
+5. If you decide to bootstrap FluxCD using this repo (other options described in next steps), you need to [install](https://fluxcd.io/flux/installation/) `flux` CLI and add it to the PATH
 
 
 ## Produced GitOps repo structure
@@ -46,9 +47,9 @@
 > If you already have the installed Flux CD in your management cluster, you can skip this stage
 
 Run the command and wait when Flux is installed to the cluster and configuration is synced to the repo:
-    ```shell
-    task bootstrap:flux
-    ```
+```shell
+task bootstrap:flux
+```
 
 ### Stage 3. Generate k0rdent configuration
 
@@ -68,7 +69,7 @@ Run the command and wait when Flux is installed to the cluster and configuration
 
 ### Stage 4. Watch the rollout of k0rdent
 
-Currently only KCM k0rdent component is installed with this repo. When KCM controllers is installed, it starts to bootstrap all the required configuration, providers and components. To monitor the KCM installation you can watch the `Management` type object. By default, it's called `kcm`. 
+Currently only KCM k0rdent component is installed with this repo. When KCM controller is installed, it starts to bootstrap all the required configuration, providers and components. To monitor the KCM installation you can watch the `Management` type object. By default, it's called `kcm`. 
 
 > Creation of the Management object can take some time
 

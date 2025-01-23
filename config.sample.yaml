@@ -1,44 +1,49 @@
-version: '3'
 
-env:
+## === Flux configuration ===
+flux:
+  # Flux namespace
+  namespace: flux-system
+  github:
+    # GitOps repo source branch
+    branch: main
+    # (REQUIRED) GitOps repo namespace. It could be username for personal repositories or organisation name for orgs
+    username: ""
+    # (REQUIRED) GitOps repo name
+    repository: ""
+    # Is GitOps repo owned by organisation
+    organisation: false
+    # (REQUIRED IF YOU BOOTSTRAP FLUX USING THIS REPO) Github PAT token to bootstrap Flux
+    token: ""
+
+## ==== k0rdent KCM component configuration ====
+kcm:
+  # namespace where the KCM operator and all providers will be deployed
+  namespace: kcm-system
   
-  # ==== FluxCD bootstrap ====
-  # These variables are used only if you bootstrap a new FluxCD installation from this repo using the command:
-  #   task bootstrap:flux
-  #
-  # (REQUIRED) Github PAT token to configure the connection from k8s cluster to GitOps repo
-  # Check the official FluxCD documentation https://fluxcd.io/flux/installation/bootstrap/github/#github-pat
-  GITHUB_TOKEN: ""
-
-  # (OPTIONAL) If created repo is owned by organization
-  GITHUB_ORGANIZATION: false
-
+  # KCM version
+  version: 0.0.7
   
+  # KCM helm repository
+  repository: oci://ghcr.io/k0rdent/kcm/charts/kcm
 
-  # ==== Template generation ====
-  # These variables are used to generate manifests
-  #
-  # (REQUIRED) The owner of this Github repository - it could be user or organization
-  GITHUB_USERNAME: ""
-
-  # (REQUIRED) The name of this Github repository, it will be used as the GitOps source
-  GITHUB_REPO_NAME: ""
-
-  # (OPTIONAL) Git branch that will be used as the source to sync the state
-  GITHUB_REPO_BRANCH: main
-
-  # (OTPTIONAL) kubernetes namespace where the Flux is installed.
-  # GitRepository and Kustomization objects will be deployed in this namespace
-  FLUX_NAMESPACE: flux-system
-
-  # (OPTIONAL) k0rdent KCM component namespace
-  KCM_NAMESPACE: kcm-system
-
-  # (OPTIONAL) k0rdent KCM component version
-  KCM_VERSION: 0.0.7
-
-  # (OPTIONAL) k0rdent KCM helm OCI repository
-  KCM_OCI_REPOSITORY: oci://ghcr.io/k0rdent/kcm/charts/kcm
-
-  # (OPTIONAL) if your management cluster already has the installed cert manager, you can change this value to false
-  KCM_CERTMANAGER_ENABLED: true
+  # The list of providers that should be deployed and configured by KCM
+  providers:
+    - k0smotron
+    - cluster-api-provider-aws
+    - cluster-api-provider-azure
+    - cluster-api-provider-vsphere
+    - cluster-api-provider-openstack
+    - projectsveltos
+  
+  # KCM Helm chart values
+  values:
+    flux2:
+      enabled: false
+    cert-manager:
+      enabled: true
+    controller:
+      # change these values to false when issues are resolved:
+      # https://github.com/k0rdent/kcm/issues/940
+      # https://github.com/k0rdent/kcm/issues/939
+      createManagement: true
+      createAccessManagement: true

@@ -1,36 +1,31 @@
 version: '3'
 
 vars:
-  CONFIG_FILE: '{{.ROOT_DIR}}/config.yaml'
+  GOMPLATE_DATASOURCE: '{{.ROOT_DIR}}/config.yaml'
+  CONFIGURATION_DIR: '{{.ROOT_DIR}}/.configuration'
+  GOMPLATE_CONFIG: '{{.CONFIGURATION_DIR}}/gomplate-config.yaml'
+  FLUX_ENV: '{{.CONFIGURATION_DIR}}/flux-config.env'
 
 tasks:
 
   :init:
     desc: creates the local configuration to bootstrap FluxCD and render templates
-    cmd: mv {{.CONFIG_FILE | replace ".yaml" ".sample.yaml" }} {{.CONFIG_FILE}}
+    cmd: mv {{.GOMPLATE_DATASOURCE | replace ".yaml" ".sample.yaml" }} {{.GOMPLATE_DATASOURCE}}
     status:
-      - test -f {{.CONFIG_FILE}}
+      - test -f {{.GOMPLATE_DATASOURCE}}
 
   flux:
     desc: bootstrap Flux on the management cluster
-    deps:
-      - for:
-          - GITHUB_TOKEN
-          - GITHUB_USERNAME
-          - GITHUB_REPO_NAME
-        task: check-variable-set
-        vars:
-          VAR: '{{.ITEM}}'
     cmds:
-      - flux bootstrap github 
+      - gomplate -f {{.FLUX_ENV | replace ".env" ".sample.env"}} -o {{.FLUX_ENV}} --config {{.GOMPLATE_CONFIG}}
+      - export $(cat {{.FLUX_ENV}} | xargs) && flux bootstrap github 
         --token-auth
-        --token={{.GITHUB_TOKEN}}
-        --owner={{.GITHUB_USERNAME}}
-        --repository={{.GITHUB_REPO_NAME}}
-        --branch={{ .GITHUB_REPO_BRANCH | default "main" }}
+        --owner=$GITHUB_USERNAME
+        --repository=$GITHUB_REPO_NAME
+        --namespace=$FLUX_NAMESPACE
+        --branch=$GITHUB_REPO_BRANCH
         --path=flux
-        {{if not .GITHUB_ORGANIZATION}} --personal {{end}}
-      - git pull
+        --personal=$GITHUB_ORGANIZATION
     preconditions:
       - sh: which flux
         msg: |-
@@ -39,6 +34,12 @@ tasks:
       - sh: which kubectl
         msg: |-
           Install and configure kubectl
+      - sh: which gomplate
+        msg: |-
+          Please install gomplate
+      - sh: test -f {{.GOMPLATE_CONFIG}}
+        msg: |-
+          Please generate the config.yaml file with 'task init' command and fill values
 
   :configure:
     desc: Render and validate k0rdent configuration files
@@ -47,34 +48,16 @@ tasks:
   
   render-configs:
     sources:
-      - .templates/**/*.yaml
       - .templates/**/.gitkeep
     method: none
-    deps:
-      - for:
-          - GITHUB_USERNAME
-          - GITHUB_REPO_NAME
-        task: check-variable-set
-        vars:
-          VAR: '{{.ITEM}}'
     cmds:
+      - cmd: gomplate --config {{.GOMPLATE_CONFIG}}
       - for: sources
         cmd: |
           mkdir -p {{.ITEM | trimPrefix ".templates/" | dir}};
-          envsubst < {{.ITEM}} > {{.ITEM | trimPrefix ".templates/"}};
+          cp {{.ITEM}} {{.ITEM | trimPrefix ".templates/"}};
     preconditions:
-      - sh: test -f {{.CONFIG_FILE}}
+      - sh: test -f {{.GOMPLATE_DATASOURCE}}
         msg: |-
           Please generate and fill the config.yaml configuration file with the 'task init' command
-    
-  check-variable-set:
-    silent: true
-    cmds:
-      - |
-        if [ "${{.VAR}}" == "" ]; then \
-          echo "The variable {{.VAR}} must be set in the config.yaml!"; \
-          exit 1; \
-        fi;
-
-
 
