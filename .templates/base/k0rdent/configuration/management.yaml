@@ -1,0 +1,15 @@
+---
+apiVersion: k0rdent.mirantis.com/v1alpha1
+kind: Management
+metadata:
+  labels:
+    k0rdent.mirantis.com/component: kcm
+  name: kcm
+spec:
+  core:
+    kcm: {}
+  providers:
+  {{- range $provider := .kcm.providers }}
+    - name: {{ $provider }}
+  {{- end }}
+  release: kcm-{{ .kcm.version | strings.ReplaceAll "." "-" }}

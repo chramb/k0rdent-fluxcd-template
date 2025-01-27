@@ -1,0 +1,3 @@
+resources:
+  - service-template-chain.yaml
+  - service-template.yaml

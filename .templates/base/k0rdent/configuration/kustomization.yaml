@@ -1,0 +1,3 @@
+resources:
+  - access-management.yaml
+  - management.yaml

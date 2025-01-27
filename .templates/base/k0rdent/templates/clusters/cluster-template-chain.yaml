@@ -1,0 +1,8 @@
+---
+apiVersion: k0rdent.mirantis.com/v1alpha1
+kind: ClusterTemplateChain
+metadata:
+  name: cluster-template-chain
+spec:
+  supportedTemplates:
+    - name: cluster-template

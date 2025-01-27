@@ -1,0 +1,12 @@
+
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: k0rdent-configuration
+  namespace: {{ .flux.namespace }}
+spec:
+  interval: 1m0s
+  ref:
+    branch: {{ .flux.github.branch }}
+  url: https://github.com/{{ .flux.github.username }}/{{ .flux.github.repository }}.git

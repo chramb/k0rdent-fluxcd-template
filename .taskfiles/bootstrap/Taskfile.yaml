@@ -16,6 +16,8 @@ tasks:
 
   flux:
     desc: bootstrap Flux on the management cluster
+    requires:
+      vars: [MANAGEMENT_CLUSTER]
     cmds:
       - gomplate -f {{.FLUX_ENV | replace ".env" ".sample.env"}} -o {{.FLUX_ENV}} --config {{.GOMPLATE_CONFIG}}
       - export $(cat {{.FLUX_ENV}} | xargs) && flux bootstrap github 
@@ -24,7 +26,7 @@ tasks:
         --repository=$GITHUB_REPO_NAME
         --namespace=$FLUX_NAMESPACE
         --branch=$GITHUB_REPO_BRANCH
-        --path=flux/$ENVIRONMENT
+        --path=management-clusters/$MANAGEMENT_CLUSTER/flux
         --personal=$GITHUB_ORGANIZATION
     preconditions:
       - sh: which flux

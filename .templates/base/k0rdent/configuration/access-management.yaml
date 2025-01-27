@@ -1,0 +1,9 @@
+---
+apiVersion: k0rdent.mirantis.com/v1alpha1
+kind: AccessManagement
+metadata:
+  labels:
+    k0rdent.mirantis.com/component: kcm
+  name: kcm
+spec:
+  accessRules: []

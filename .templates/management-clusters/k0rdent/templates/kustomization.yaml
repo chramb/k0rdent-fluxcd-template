@@ -1,0 +1,4 @@
+namespace: {{ .kcm.namespace }}
+resources:
+  - clusters
+  - services

@@ -16,8 +16,9 @@ flux:
     token: ""
 
 ## == Common configuration
-# The list of management cluster environments
-environments: []
+# The list of management clusters
+managementClusters:
+  - cluster-1
 
 ## ==== k0rdent KCM component configuration ====
 kcm:

@@ -13,17 +13,41 @@
 
 ```
 /
-├── clusters                                            # k0rdent Cluster deployments
-├── global-services                                     # k0rdent global beach-head services
-├── templates                                           # Custom ClusterTemplates and ServiceTemplates
-│   ├── clusters
-│   └── services
-├── credentials                                         # Platform credentials
-├── management                                          # Management cluster configuration
-│   └── k0rdent                                         # k0rdent platform configuration
-└── flux                                                # Flux CD configurations
-    ├── flux-system
-    └── k0rdent.yaml
+├── base                                                # base configurations that can be reused by kustomizations for management clusters
+│   ├── components                                      # management cluster components
+│   │   └── k0rdent                                     # k0rdent platform base installation configs
+│   └── k0rdent                                         # k0rdent objects base configurations
+│       ├── cluster-deployments                         # k0rdent ClusterDeployment base
+│       ├── configuration                               # k0rdent configuration (Management, AccessManagement, etc)
+│       ├── credentials                                 # k0rdent Credential bases
+│       │   ├── aws                                     # k0rdent AWS Credential base
+│       │   ├── azure                                   # k0rdent Azure Credential base
+│       │   └── openstack                               # k0rdent Openstack Credential base
+│       ├── multiclusterservices                        # k0rdent MultiClusterService base
+│       └── templates                                   # k0rdent template bases
+│           ├── clusters                                # k0rdent ClusterTemplate base
+│           └── services                                # k0rdent ServiceTemplate base
+└── management-clusters                                 # management clusters configurations
+    ├── cluster-1                                       # configuration for the "cluster-1" management cluster
+    │   ├── kustomization.yaml                          # management cluster main kustomization object that generates manifests
+    │   ├── components                                  # management cluster components configuration
+    │   │   └── k0rdent                                 # management cluster k0rdent platform installation
+    │   ├── flux                                        # management cluster Flux CD sync configs
+    │   │   ├── flux-system                             # management cluster flux-system sync
+    │   │   ├── git-repository.yaml                     # management cluster flux GitRepository that is used in k0rdent flux sync configs
+    │   │   └── k0rdent-kcm.yaml                        # management cluster k0rdent kcm component flux sync configs
+    │   └── k0rdent                                     # management cluster k0rdent objects and configurations
+    │      ├── cluster-deployments                      # management cluster ClusterDeployment objects directory
+    │      ├── configuration                            # management cluster k0rdent platform configuration
+    │      ├── credentials                              # management cluster Credential objects directory
+    │      ├── multiclusterservices                     # management cluster MultiClusterService objects directory
+    │      ├── templates                                # management cluster custom template objects directory
+    │      │   ├── clusters                             # management cluster ClusterTemplate objects directory
+    │      │   └── services                             # management cluster ServiceTemplate objects directory
+    │      └── k0rdent                                  # management cluster k0rdent objects and configurations
+    └── cluster-2                                       
+    ...
+    └── cluster-2                                       
 ```
 
 ## Setup the repo
@@ -46,10 +70,13 @@
 > [!IMPORTANT]
 > If you already have the installed Flux CD in your management cluster, you can skip this stage
 
-If you want to use the single management cluster and Flux installation, just run the command and wait when Flux is installed to the cluster and configuration is synced to the repo:
-```shell
-task bootstrap:flux
-```
+1. In the generated [`config.yaml`](./config.yaml) file, specify the list of k0rdent management cluster names or their aliases under the `managementClusters` property. For example, you can separate management clusters by environments - dev, staging, prod, etc. It's required to specify at leas one cluster
+2. Switch your local kubectl context to the first kubernetes cluster that will be used as the management cluster
+3. Run the bootstrap FluxCD command with the management cluster variable that has the exactly same value as the appropriate one from the `managementClusters` list for the current kubectl context. For example, if you have the `management-cluster-1` value in the `managementClusters` list and you switched the kubectl context to the corresponding cluster:
+    ```shell
+    MANAGEMENT_CLUSTER=management-cluster-1 task bootstrap:flux 
+    ```
+4. Repeat steps 2-3 for each management cluster
 
 If it's planned to use multiple management clusters and each of them will use the separate FluxCD installation:
 
@@ -73,13 +100,13 @@ If it's planned to use multiple management clusters and each of them will use th
 
     ```shell
     git add -A
-    git commit -m "chore: initial commit"
+    git commit -m "initial k0rdent configuration"
     git push
     ```
 
 ### Stage 3. (Optional) Connect this repo to the existing FluxCD installation
 
-If you already use FluxCD and didn't install using the current setup guide, add the current repo to it and make it sync Flux configs from the the `flux` directory
+If you already use FluxCD and didn't install using the current setup guide, add the current repo to it and make it sync Flux configs from the the `management-clusters/<cluster-name>/flux` directory
 
 ### Stage 4. Watch the rollout of k0rdent
 

@@ -1,0 +1,9 @@
+apiVersion: k0rdent.mirantis.com/v1alpha1
+kind: MultiClusterService
+metadata:
+  name: multiclusterservice
+spec:
+  clusterSelector: {}
+  serviceSpec:
+    priority: 1000
+    services: []

@@ -1,0 +1,42 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: k0rdent-platform
+  namespace: {{ .flux.namespace }}
+spec:
+  interval: 10m0s
+  path: ./management-clusters/{{ $managementCluster }}/components/k0rdent
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: k0rdent-configuration
+    namespace: {{ .flux.namespace }}
+  healthChecks:
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: managements.k0rdent.mirantis.com
+    - apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      name: accessmanagements.k0rdent.mirantis.com
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: kcm-controller-manager
+      namespace: kcm-system
+
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: k0rdent-configuration
+  namespace: {{ .flux.namespace }}
+spec:
+  interval: 10m0s
+  path: ./management-clusters/{{ $managementCluster }}/k0rdent
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: k0rdent-configuration
+    namespace: {{ .flux.namespace }}
+  dependsOn:
+    - name: k0rdent-platform
