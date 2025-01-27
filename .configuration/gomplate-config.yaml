@@ -1,4 +1,4 @@
-inputDir: .templates/
+inputDir: bin/.templates/
 outputDir: ./
 
 context:

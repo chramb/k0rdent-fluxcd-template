@@ -18,7 +18,7 @@ metadata:
   namespace: {{ .flux.namespace }}
 spec:
   interval: 10m0s
-  path: ./management/k0rdent/platform
+  path: ./management/{{ $environmentPath }}k0rdent/platform
   prune: true
   sourceRef:
     kind: GitRepository
@@ -44,7 +44,7 @@ metadata:
   namespace: {{ .flux.namespace }}
 spec:
   interval: 10m0s
-  path: ./management/k0rdent/configuration
+  path: ./management/{{ $environmentPath }}k0rdent/configuration
   prune: true
   sourceRef:
     kind: GitRepository
@@ -61,7 +61,7 @@ metadata:
   namespace: {{ .flux.namespace }}
 spec:
   interval: 10m0s
-  path: ./credentials
+  path: ./credentials{{ $environmentPath }}
   prune: true
   sourceRef:
     kind: GitRepository
@@ -76,7 +76,7 @@ metadata:
   namespace: {{ .flux.namespace }}
 spec:
   interval: 10m0s
-  path: ./clusters
+  path: ./clusters{{ $environmentPath }}
   prune: true
   sourceRef:
     kind: GitRepository
@@ -91,7 +91,7 @@ metadata:
   namespace: {{ .flux.namespace }}
 spec:
   interval: 10m0s
-  path: ./global-services
+  path: ./global-services{{ $environmentPath }}
   prune: true
   sourceRef:
     kind: GitRepository

@@ -1,0 +1,27 @@
+{{- define "writeTemplate" -}}
+{{- $environmentVariable := "" }}
+{{- if eq (path.Ext .templatePath) ".yaml" }}
+  {{- $environmentVariable = printf "{{- $environmentPath := \"%s\"}}\n" (ternary (printf "%s/" .environment) "" (gt (len .environment) 0)) }}
+{{- end }}
+{{- $fileContent := printf "%s%s" $environmentVariable (file.Read .templatePath) }}
+{{- file.Write .newPath $fileContent }}
+{{- end -}}
+
+{{- $binDir := "./bin" }}
+{{- range (file.ReadDir ".templates") }}
+  {{- $parentPath := printf ".templates/%s" . }}
+  {{- range $templatePath := (file.Walk $parentPath) }}
+    {{- if not (file.IsDir $templatePath) }}
+      {{- $trimmedPath := strings.TrimPrefix $parentPath $templatePath }}
+      {{- if gt (len $.environments) 0 }}
+        {{- range $.environments }}
+          {{- $newPath := printf "%s/%s/%s%s" $binDir $parentPath . $trimmedPath }}
+          {{ template "writeTemplate" (dict "environment" . "templatePath" $templatePath "newPath" $newPath) }}
+        {{- end }}
+      {{- else }}
+        {{- $newPath := printf "%s/%s" $binDir $templatePath }}
+        {{ template "writeTemplate" (dict "environment" "" "templatePath" $templatePath "newPath" $newPath) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

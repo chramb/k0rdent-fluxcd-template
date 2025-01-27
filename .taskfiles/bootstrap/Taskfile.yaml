@@ -24,7 +24,7 @@ tasks:
         --repository=$GITHUB_REPO_NAME
         --namespace=$FLUX_NAMESPACE
         --branch=$GITHUB_REPO_BRANCH
-        --path=flux
+        --path=flux/$ENVIRONMENT
         --personal=$GITHUB_ORGANIZATION
     preconditions:
       - sh: which flux
@@ -44,20 +44,29 @@ tasks:
   :configure:
     desc: Render and validate k0rdent configuration files
     cmds:
+      - task: prepare-templates
       - task: render-configs
   
+  prepare-templates:
+    cmds:
+      - cmd: rm -rf bin/.templates
+      - cmd: gomplate --config {{.GOMPLATE_CONFIG}} -f {{.CONFIGURATION_DIR}}/directory-structure.yaml
+
   render-configs:
     sources:
-      - .templates/**/.gitkeep
+      - bin/.templates/**/.gitkeep
     method: none
     cmds:
       - cmd: gomplate --config {{.GOMPLATE_CONFIG}}
       - for: sources
         cmd: |
-          mkdir -p {{.ITEM | trimPrefix ".templates/" | dir}};
-          cp {{.ITEM}} {{.ITEM | trimPrefix ".templates/"}};
+          mkdir -p {{.ITEM | trimPrefix "bin/.templates/" | dir}};
+          cp {{.ITEM}} {{.ITEM | trimPrefix "bin/.templates/"}};
     preconditions:
       - sh: test -f {{.GOMPLATE_DATASOURCE}}
         msg: |-
           Please generate and fill the config.yaml configuration file with the 'task init' command
+      - sh: test -d bin/.templates
+        msg: |-
+          Please prepare templates for rendering by running the command 'task bootstrap:prepare-templates'
 

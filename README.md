@@ -46,10 +46,20 @@
 > [!IMPORTANT]
 > If you already have the installed Flux CD in your management cluster, you can skip this stage
 
-Run the command and wait when Flux is installed to the cluster and configuration is synced to the repo:
+If you want to use the single management cluster and Flux installation, just run the command and wait when Flux is installed to the cluster and configuration is synced to the repo:
 ```shell
 task bootstrap:flux
 ```
+
+If it's planned to use multiple management clusters and each of them will use the separate FluxCD installation:
+
+1. In the generated [`config.yaml`](./config.yaml) file, specify the list of management cluster names or their aliases under the `environments` property. For example, you can separate management clusters by environments - dev, staging, prod, etc.
+2. Switch your local kubectl context to the first kubernetes cluster that will be used as the management cluster
+3. Run the bootstrap FluxCD command with the environment variable that has the exactly same value as the appropriate one from the `environments` list for the current management cluster. For example, if you have the `dev` value in the `environments` list and you switched the kubectl context to the corresponding cluster:
+    ```shell
+    ENVIRONMENT=dev task bootstrap:flux 
+    ```
+4. Repeat steps 2-3 for each management cluster
 
 ### Stage 3. Generate k0rdent configuration
 
@@ -66,6 +76,10 @@ task bootstrap:flux
     git commit -m "chore: initial commit"
     git push
     ```
+
+### Stage 3. (Optional) Connect this repo to the existing FluxCD installation
+
+If you already use FluxCD and didn't install using the current setup guide, add the current repo to it and make it sync Flux configs from the the `flux` directory
 
 ### Stage 4. Watch the rollout of k0rdent
 

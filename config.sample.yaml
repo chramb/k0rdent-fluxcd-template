@@ -15,6 +15,10 @@ flux:
     # (REQUIRED IF YOU BOOTSTRAP FLUX USING THIS REPO) Github PAT token to bootstrap Flux
     token: ""
 
+## == Common configuration
+# The list of management cluster environments
+environments: []
+
 ## ==== k0rdent KCM component configuration ====
 kcm:
   # namespace where the KCM operator and all providers will be deployed
