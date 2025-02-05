@@ -70,3 +70,13 @@ tasks:
         msg: |-
           Please prepare templates for rendering by running the command 'task bootstrap:prepare-templates'
 
+  renovate:
+    desc: Set correct repository for renovate bot
+    vars:
+      value:
+        sh: git remote get-url origin | cut -d':' -f2 | cut -d'/' -f1,2 | sed 's/.git$//'
+    cmds:
+      - yq eval --inplace '.jobs.renovate.steps[1].env.RENOVATE_REPOSITORIES = "[\"{{.value}}\"]"' .github/workflows/renovate.yaml
+    silent: false
+    sources:
+      - .github/workflows/renovate.yaml
