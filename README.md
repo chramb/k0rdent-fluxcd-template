@@ -78,16 +78,6 @@
     ```
 4. Repeat steps 2-3 for each management cluster
 
-If it's planned to use multiple management clusters and each of them will use the separate FluxCD installation:
-
-1. In the generated [`config.yaml`](./config.yaml) file, specify the list of management cluster names or their aliases under the `environments` property. For example, you can separate management clusters by environments - dev, staging, prod, etc.
-2. Switch your local kubectl context to the first kubernetes cluster that will be used as the management cluster
-3. Run the bootstrap FluxCD command with the environment variable that has the exactly same value as the appropriate one from the `environments` list for the current management cluster. For example, if you have the `dev` value in the `environments` list and you switched the kubectl context to the corresponding cluster:
-    ```shell
-    ENVIRONMENT=dev task bootstrap:flux 
-    ```
-4. Repeat steps 2-3 for each management cluster
-
 ### Stage 3. Generate k0rdent configuration
 
 1. Template out all the configuraion files:
