@@ -25,6 +25,10 @@ go.work.sum
 *.env
 !flux-config.sample.env
 
+/.idea
+
 .task
 /config.yaml
 /bin
+/base
+/management-clusters
