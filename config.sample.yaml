@@ -15,6 +15,8 @@ flux:
     # (REQUIRED IF YOU BOOTSTRAP FLUX USING THIS REPO) Github PAT token to bootstrap Flux
     token: ""
 
+gitopsTool: flux
+
 ## == Common configuration
 # The list of management clusters
 managementClusters:
@@ -24,12 +26,13 @@ managementClusters:
 kcm:
   # namespace where the KCM operator and all providers will be deployed
   namespace: kcm-system
-  
+
   # KCM version
   version: 0.0.7
-  
+
   # KCM helm repository
-  repository: oci://ghcr.io/k0rdent/kcm/charts/kcm
+  repository: oci://ghcr.io/k0rdent/kcm/charts
+  chart: kcm
 
   # The list of providers that should be deployed and configured by KCM
   providers:

@@ -16,7 +16,7 @@ metadata:
   namespace: {{ .kcm.namespace }}
 spec:
   interval: 5m0s
-  url: {{ .kcm.repository }}
+  url: {{ .kcm.repository }}/{{ .kcm.chart }}
   ref:
     tag: {{ .kcm.version }}
 

@@ -1,2 +1,3 @@
 resources:
-  - kcm.yaml
+  - namespace.yaml
+  - kcm-{{ .gitopsTool }}.yaml
