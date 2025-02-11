@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .kcm.namespace }}
+  labels:
+    app.kubernetes.io/instance: kcm-system
+    app.kubernetes.io/part-of: k0rdent

@@ -1,14 +1,24 @@
-
 ---
-apiVersion: v1
-kind: Namespace
+{{- if eq .gitopsTool "argo" }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
-  name: {{ .kcm.namespace }}
-  labels:
-    app.kubernetes.io/instance: kcm-system
-    app.kubernetes.io/part-of: k0rdent
-
----
+  name: kcm
+  namespace: {{ .kcm.namespace }}
+spec:
+  project: default
+  source:
+    repoURL: {{ .kcm.repository }}
+    targetRevision: {{ .kcm.version }}
+    chart: {{ .kcm.chart }}
+  destination:
+    name: "in-cluster"
+    namespace: {{ .kcm.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+{{ else }}
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
@@ -16,10 +26,9 @@ metadata:
   namespace: {{ .kcm.namespace }}
 spec:
   interval: 5m0s
-  url: {{ .kcm.repository }}
+  url: {{ .kcm.repository }}/{{ .kcm.chart }}
   ref:
     tag: {{ .kcm.version }}
-
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -34,7 +43,6 @@ spec:
   interval: 10m
   values:
 {{ .kcm.values | toYAML | strings.Indent 4 }}
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -57,3 +65,4 @@ spec:
       app: source-controller
   policyTypes:
   - Ingress
+{{ end }}
