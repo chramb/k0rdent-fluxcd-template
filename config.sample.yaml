@@ -1,8 +1,22 @@
+gitops:
+  ## === Flux configuration ===
+  flux:
+    # Flux namespace
+    namespace: flux-system
 
-## === Flux configuration ===
-flux:
-  # Flux namespace
-  namespace: flux-system
+  ## === ArgoCD configuration ===
+  argo:
+    # Argo namespace
+    namespace: argocd
+    # Defines which "flavor" of argo to install - only relevant when bootstrapping argo.
+    # To see which values are allowed, see https://github.com/argoproj/argo-cd/tree/master/manifests
+    flavor: core-install
+    # Argo version to install
+    version: v2.14.2
+
+  # The used Gitops tool. Valid choices are "flux" (default) and "argo".
+  tool: flux
+
   github:
     # GitOps repo source branch
     branch: main
@@ -15,7 +29,6 @@ flux:
     # (REQUIRED IF YOU BOOTSTRAP FLUX USING THIS REPO) Github PAT token to bootstrap Flux
     token: ""
 
-gitopsTool: flux
 
 ## == Common configuration
 # The list of management clusters

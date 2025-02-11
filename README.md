@@ -65,16 +65,26 @@
 
 2. Fill out the `config.yaml` configuration file using the comments in that file as a guide.
 
-### Stage 2. Bootstrap or configure FluxCD
+### Stage 2. Bootstrap and configuring the Gitops tool
 
 > [!IMPORTANT]
-> If you already have the installed Flux CD in your management cluster, you can skip this stage
+> If you already have the installed FluxCD / ArgoCD in your management cluster, you can skip this stage
 
+#### Configuring FluxCD
 1. In the generated [`config.yaml`](./config.yaml) file, specify the list of k0rdent management cluster names or their aliases under the `managementClusters` property. For example, you can separate management clusters by environments - dev, staging, prod, etc. It's required to specify at leas one cluster
 2. Switch your local kubectl context to the first kubernetes cluster that will be used as the management cluster
 3. Run the bootstrap FluxCD command with the management cluster variable that has the exactly same value as the appropriate one from the `managementClusters` list for the current kubectl context. For example, if you have the `management-cluster-1` value in the `managementClusters` list and you switched the kubectl context to the corresponding cluster:
     ```shell
     MANAGEMENT_CLUSTER=management-cluster-1 task bootstrap:flux 
+    ```
+4. Repeat steps 2-3 for each management cluster
+
+#### Configuring ArgoCD
+1. In the generated [`config.yaml`](./config.yaml) file, specify the list of k0rdent management cluster names or their aliases under the `managementClusters` property. For example, you can separate management clusters by environments - dev, staging, prod, etc. It's required to specify at leas one cluster
+2. Switch your local kubectl context to the first kubernetes cluster that will be used as the management cluster
+3. Run the bootstrap ArgoCD command with the management cluster variable that has the exactly same value as the appropriate one from the `managementClusters` list for the current kubectl context. For example, if you have the `management-cluster-1` value in the `managementClusters` list and you switched the kubectl context to the corresponding cluster:
+    ```shell
+    MANAGEMENT_CLUSTER=management-cluster-1 task bootstrap:argo 
     ```
 4. Repeat steps 2-3 for each management cluster
 
