@@ -110,3 +110,28 @@ kubectl -n kcm-system get management.k0rdent.mirantis.com kcm -o go-template='{{
 
 All components in the list must have the value `true`
 
+### Optional: Enable Renovatebot for Dependency Updates
+
+To automatically keep dependencies up to date, you can enable [Renovatebot](https://github.com/renovatebot/renovate) by following these steps:
+
+1. **Run the bootstrap task**
+   Execute the following command to set up Renovate:
+   ```sh
+   task bootstrap:renovate
+   ```
+
+2. **Create a GitHub Personal Access Token (PAT)**
+   - Go to [GitHub Developer Settings](https://github.com/settings/tokens).
+   - Generate a new **fine-grained** or **classic** PAT with the necessary repository permissions.
+   - Copy the generated token.
+
+3. **Save the PAT to GitHub Actions Secrets**
+   - Navigate to your repository on GitHub.
+   - Go to **Settings > Secrets and variables > Actions**.
+   - Click **New repository secret** and name it:
+     ```
+     RENOVATE_TOKEN
+     ```
+   - Paste the copied token and save.
+
+Once configured, Renovatebot will automatically create pull requests for dependency updates based on the configured rules.
