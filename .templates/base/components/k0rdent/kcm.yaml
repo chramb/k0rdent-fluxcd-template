@@ -1,5 +1,5 @@
 ---
-{{- if eq .gitopsTool "argo" }}
+{{- if eq .gitops.tool "argo" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -11,6 +11,9 @@ spec:
     repoURL: {{ .kcm.repository }}
     targetRevision: {{ .kcm.version }}
     chart: {{ .kcm.chart }}
+    helm:
+      values: |
+{{ .kcm.values | toYAML | strings.Indent 8 }}
   destination:
     name: "in-cluster"
     namespace: {{ .kcm.namespace }}
@@ -18,7 +21,7 @@ spec:
     automated:
       prune: true
       selfHeal: true
-{{ else }}
+{{ else if eq .gitops.tool "flux" }}
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
@@ -48,7 +51,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-kcm-controller-interaction
-  namespace: {{ .flux.namespace }}
+  namespace: {{ .gitops.flux.namespace }}
 spec:
   ingress:
   - from:
@@ -65,4 +68,6 @@ spec:
       app: source-controller
   policyTypes:
   - Ingress
-{{ end }}
+  {{ else }}
+  {{- fail "Unrecognized value for '.gitops.tool'. Allowed values are 'flux' and 'argo'" }}
+  {{ end}}

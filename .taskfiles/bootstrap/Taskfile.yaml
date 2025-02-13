@@ -14,6 +14,21 @@ tasks:
     status:
       - test -f {{.GOMPLATE_DATASOURCE}}
 
+  argo:
+    desc: bootstrap ArgoCD on the management cluster
+    requires:
+      vars: [MANAGEMENT_CLUSTER]
+    cmds:
+      - kubectl apply -k base/argo
+      - kubectl apply -k management-clusters/$MANAGEMENT_CLUSTER/gitops
+    preconditions:
+      - sh: which kubectl
+        msg: |-
+          Install and configure kubectl
+      - sh: test -f {{.GOMPLATE_CONFIG}}
+        msg: |-
+          Please generate the config.yaml file with 'task init' command and fill values
+
   flux:
     desc: bootstrap Flux on the management cluster
     requires:
@@ -26,7 +41,7 @@ tasks:
         --repository=$GITHUB_REPO_NAME
         --namespace=$FLUX_NAMESPACE
         --branch=$GITHUB_REPO_BRANCH
-        --path=management-clusters/$MANAGEMENT_CLUSTER/flux
+        --path=management-clusters/$MANAGEMENT_CLUSTER/gitops
         --personal=$GITHUB_ORGANIZATION
     preconditions:
       - sh: which flux

@@ -16,7 +16,7 @@
 {{/* copy .templates/base to bin/.templates/base */}}
 {{- $parentPath := ".templates/base" }}
 {{- range $templatePath := (file.Walk $parentPath) }}
-  {{- if not (file.IsDir $templatePath) }}
+  {{- if and (not (file.IsDir $templatePath)) (or (eq $.gitops.tool "argo") (not (strings.Contains "argo" $templatePath))) }}
     {{- $trimmedPath := strings.TrimPrefix $parentPath $templatePath }}
     {{- $newPath := printf "%s/%s%s" $binDir $parentPath $trimmedPath }}
     {{- file.Write $newPath (file.Read $templatePath) }}
