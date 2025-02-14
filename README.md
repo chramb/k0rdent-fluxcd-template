@@ -145,3 +145,15 @@ To automatically keep dependencies up to date, you can enable [Renovatebot](http
    - Paste the copied token and save.
 
 Once configured, Renovatebot will automatically create pull requests for dependency updates based on the configured rules.
+
+## Adding further Management Clusters
+To create manifests for further management clusters we created a [helper tool](https://github.com/Mirantis-PS/gitops-helper) that maintains consistency and reproducibility.
+
+The tool must be from within this cloned repository:
+1. Run the gitops-helper tool using Docker
+    ```sh
+    docker run -it -v $(pwd):/repo ghcr.io/mirantis-ps/gitops-helper:main create managed-cluster
+    ```
+1. Review and modify the generated configuration files as needed.
+1. Commit and push the files to your Git repository.
+1. Watch your GitOps-managed cluster to sync the state.
