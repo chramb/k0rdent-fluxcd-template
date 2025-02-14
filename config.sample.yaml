@@ -42,6 +42,7 @@ kcm:
   namespace: kcm-system
 
   # KCM version
+  # renovate: datasource=github-releases depName=k0rdent/kcm
   version: 0.0.7
 
   # KCM helm repository
