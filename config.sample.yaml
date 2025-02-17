@@ -60,8 +60,6 @@ kcm:
   
   # KCM Helm chart values
   values:
-    flux2:
-      enabled: false
     cert-manager:
       enabled: true
     controller:

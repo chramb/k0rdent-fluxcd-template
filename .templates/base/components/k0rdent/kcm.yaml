@@ -1,5 +1,16 @@
+{{- $fluxValues := dict -}}
+{{- $kcmValues := .kcm.values -}}
+{{- if has $kcmValues "flux2" -}}
+  {{- $fluxValues = $kcmValues.flux2 -}}
+{{- end -}}
+{{- if eq .gitops.tool "flux" -}}
+  {{- $fluxValues = coll.Set "enabled" false $fluxValues -}}
+{{- else -}}
+  {{- $fluxValues = coll.Set "enabled" true $fluxValues -}}
+{{- end -}}
+{{- $kcmValues = set "flux2" $fluxValues $kcmValues -}}
+{{- if eq .gitops.tool "argo" -}}
 ---
-{{- if eq .gitops.tool "argo" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -13,7 +24,7 @@ spec:
     chart: {{ .kcm.chart }}
     helm:
       values: |
-{{ .kcm.values | toYAML | strings.Indent 8 }}
+{{ $kcmValues | toYAML | strings.Indent 8 }}
   destination:
     name: "in-cluster"
     namespace: {{ .kcm.namespace }}
@@ -21,7 +32,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
-{{ else if eq .gitops.tool "flux" }}
+{{ else if eq .gitops.tool "flux" -}}
+---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
@@ -45,7 +57,7 @@ spec:
     namespace: {{ .kcm.namespace }}
   interval: 10m
   values:
-{{ .kcm.values | toYAML | strings.Indent 4 }}
+{{ $kcmValues | toYAML | strings.Indent 4 }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
