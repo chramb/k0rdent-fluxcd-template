@@ -42,7 +42,7 @@ tasks:
         --namespace=$FLUX_NAMESPACE
         --branch=$GITHUB_REPO_BRANCH
         --path=management-clusters/$MANAGEMENT_CLUSTER/gitops
-        --personal=$GITHUB_ORGANIZATION
+        --personal=$GITHUB_PERSONAL
     preconditions:
       - sh: which flux
         msg: |-

@@ -25,8 +25,8 @@ gitops:
     username: ""
     # (REQUIRED) GitOps repo name
     repository: ""
-    # Is GitOps repo owned by organisation
-    organisation: false
+    # Is GitOps repo owned by a personal account
+    personal: true
     # (REQUIRED IF YOU BOOTSTRAP FLUX USING THIS REPO) Github PAT token to bootstrap Flux
     token: ""
 
