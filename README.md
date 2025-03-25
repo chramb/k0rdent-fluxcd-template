@@ -32,9 +32,9 @@
     │   ├── kustomization.yaml                          # management cluster main kustomization object that generates manifests
     │   ├── components                                  # management cluster components configuration
     │   │   └── k0rdent                                 # management cluster k0rdent platform installation
-    │   ├── flux                                        # management cluster Flux CD sync configs
+    │   ├── gitops                                      # management cluster Flux CD sync configs
     │   │   ├── flux-system                             # management cluster flux-system sync
-    │   │   ├── git-repository.yaml                     # management cluster flux GitRepository that is used in k0rdent flux sync configs
+    │   │   ├── gitops.yaml                             # management cluster flux GitRepository that is used in k0rdent flux sync configs
     │   │   └── k0rdent-kcm.yaml                        # management cluster k0rdent kcm component flux sync configs
     │   └── k0rdent                                     # management cluster k0rdent objects and configurations
     │      ├── cluster-deployments                      # management cluster ClusterDeployment objects directory
